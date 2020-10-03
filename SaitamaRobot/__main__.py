@@ -208,7 +208,7 @@ def help_button(update: Update, context: CallbackContext):
             module = mod_match.group(1)
             text = "Here is the help for the *{}* module:\n".format(HELPABLE[module].__mod_name__) \
                    + HELPABLE[module].__help__
-            query.message.reply_text(
+            query.message.edit_text(
                 text=text,
                 parse_mode=ParseMode.MARKDOWN,
                 disable_web_page_preview=True,
@@ -219,7 +219,7 @@ def help_button(update: Update, context: CallbackContext):
 
         elif prev_match:
             curr_page = int(prev_match.group(1))
-            query.message.reply_text(
+            query.message.edit_text(
                 HELP_STRINGS,
                 parse_mode=ParseMode.MARKDOWN,
                 reply_markup=InlineKeyboardMarkup(
@@ -227,14 +227,14 @@ def help_button(update: Update, context: CallbackContext):
 
         elif next_match:
             next_page = int(next_match.group(1))
-            query.message.reply_text(
+            query.message.edit_text(
                 HELP_STRINGS,
                 parse_mode=ParseMode.MARKDOWN,
                 reply_markup=InlineKeyboardMarkup(
                     paginate_modules(next_page + 1, HELPABLE, "help")))
 
         elif back_match:
-            query.message.reply_text(
+            query.message.edit_text(
                 text=HELP_STRINGS,
                 parse_mode=ParseMode.MARKDOWN,
                 reply_markup=InlineKeyboardMarkup(
@@ -242,17 +242,8 @@ def help_button(update: Update, context: CallbackContext):
 
         # ensure no spinny white circle
         context.bot.answer_callback_query(query.id)
-        query.message.delete()
     except BadRequest as excp:
-        if excp.message == "Message is not modified":
             pass
-        elif excp.message == "Query_id_invalid":
-            pass
-        elif excp.message == "Message can't be deleted":
-            pass
-        else:
-            LOGGER.exception("Exception in help buttons. %s", str(query.data))
-
 
 @run_async
 def get_help(update: Update, context: CallbackContext):
